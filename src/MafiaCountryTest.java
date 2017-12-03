@@ -5,6 +5,9 @@ import java.util.*;
 
 import static org.junit.Assert.*;
 
+/**
+ * For this Test to work the games settings must be set to minLoss = 10 and maxLoss = 50.
+ */
 public class MafiaCountryTest {
     private Game game;
     private Country country1, country2, country3;

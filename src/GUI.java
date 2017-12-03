@@ -72,7 +72,7 @@ public class GUI {
     private JCheckBox random, greedy, smart;
     
     /** Textfields */
-    private JTextField tollSizeTextField, muggingTextField;
+    private JTextField tollSizeTextField, muggingTextField, minLossTextField, maxLossTextField;
     
     /** Buttons */
     private JButton optionsButton, pauseResumeButton, abortButton;
@@ -223,6 +223,8 @@ public class GUI {
             //Text-fields
             tollSizeTextField.setText(""+game.getSettings().getTollToBePaid());
             muggingTextField.setText(""+game.getSettings().getRisk());
+            minLossTextField.setText(""+game.getSettings().getMinRobbery());
+            maxLossTextField.setText(""+game.getSettings().getMaxRobbery());
         
             //Game speed
             speed = game.getSettings().getGameSpeed();
@@ -282,16 +284,8 @@ public class GUI {
     public JPanel createButtonPanel(){
         //Initialize the JPanel, using a GridLayout
         JPanel buttons = new JPanel();
-        buttons.setLayout(new GridLayout(1,3));
+        buttons.setLayout(new GridLayout(2,3));
 
-        JButton playLogButton = new JButton("Play Log");
-        playLogButton.addActionListener(e -> testPlayButton());
-        buttons.add(playLogButton);
-
-        JButton saveLogButton = new JButton("Save Log");
-        saveLogButton.addActionListener(e -> testSaveButton());
-        buttons.add(saveLogButton);
-        
         //Instantiate the 'New'-button
         JButton newButton = new JButton("New game");
         //Connect an ActionListener
@@ -316,7 +310,7 @@ public class GUI {
         });
         //Add it to the button panel
         buttons.add(pauseResumeButton);
-        
+
         //Add the 'Abort game'-button
         abortButton = new JButton("Abort game");
         abortButton.addActionListener(e -> {
@@ -331,16 +325,27 @@ public class GUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //Stop the game timer
-                timer.stop(); 
-                
+                timer.stop();
+
                 //Hide the main window
-                mainFrame.setVisible(false); 
-                
+                mainFrame.setVisible(false);
+
                 //Show the options window
                 options.setVisible(true);
             }
         });
         buttons.add(optionsButton);
+
+        JButton playLogButton = new JButton("Play Log");
+        playLogButton.addActionListener(e -> testPlayButton());
+        buttons.add(playLogButton);
+
+        JButton saveLogButton = new JButton("Save Log");
+        saveLogButton.addActionListener(e -> testSaveButton());
+        buttons.add(saveLogButton);
+
+
+
         //Return the JPanel
         return buttons;
     }
@@ -374,7 +379,7 @@ public class GUI {
         
         //Text input
         JPanel tollAndRobberyPanel = new JPanel();
-        tollAndRobberyPanel.setLayout(new GridLayout(2,3,5,5));                    
+        tollAndRobberyPanel.setLayout(new GridLayout(4,3,5,5));
         
         //Toll size
         JLabel tollSizeLabel = new JLabel("Toll to be paid:");
@@ -395,6 +400,27 @@ public class GUI {
 
         JLabel percMugging = new JLabel("% in [0,50]");
         tollAndRobberyPanel.add(percMugging);
+
+        //Min Loss
+        JLabel minLossLabel = new JLabel("Min. loss when robbed: ");
+        tollAndRobberyPanel.add(minLossLabel);
+
+        minLossTextField = new JTextField("10", 10);
+        tollAndRobberyPanel.add(minLossTextField);
+
+        JLabel euMinLoss = new JLabel("€ in [0,100]");
+        tollAndRobberyPanel.add(euMinLoss);
+
+        //max Loss
+        JLabel maxLossLabel = new JLabel("Max. loss when robbed:");
+        tollAndRobberyPanel.add(maxLossLabel);
+
+        maxLossTextField = new JTextField("50", 10);
+        tollAndRobberyPanel.add(maxLossTextField);
+
+        JLabel euMaxLoss = new JLabel("€ in [0,100]");
+        tollAndRobberyPanel.add(euMaxLoss);
+
         
         //Speed options
         JPanel speedPanel = new JPanel();
@@ -474,10 +500,42 @@ public class GUI {
                     JOptionPane.showMessageDialog(frame, "'Toll size' and 'Risk rob' must be integers.", "Malformed input", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
+
+                //Min & Max Loss
+                int minLoss, maxLoss;
+                try{
+                    minLoss = Integer.parseInt(minLossTextField.getText());
+                    maxLoss = Integer.parseInt(maxLossTextField.getText());
+                    if(minLoss < 0){
+                        JOptionPane.showMessageDialog(frame,"'Min Loss value' must be positive.", "Illegal input", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    if(minLoss > maxLoss){
+                        JOptionPane.showMessageDialog(frame,"'Min Loss value' must be smaller than 'Max Loss value'.","Illegal input", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    if (minLoss > 100){
+                        JOptionPane.showMessageDialog(frame,"'Min Loss value' must be between 0 and 100.", "Illegal input", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    if(maxLoss > 100){
+                        JOptionPane.showMessageDialog(frame,"'Max Loss value' must be between 0 and 100.", "Illegal input", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    /*if (maxLoss < 0){
+                        JOptionPane.showMessageDialog(frame, "'Max Loss value' must be positive.");
+                        return;
+                    }*/
+                }catch(NumberFormatException e){
+                    JOptionPane.showMessageDialog(frame,"'Max Loss' and 'Min Loss' must be integers.", "Illegal input", JOptionPane.ERROR_MESSAGE);
+                    return;
+                    }
+
                 
                 
                 game.getSettings().setRisk(riskRob);
                 game.getSettings().setTollToBePaid(tollSize);
+                game.getSettings().setMinMaxRobbery(minLoss,maxLoss);
                 
                 frame.setVisible(false);
                 mainFrame.setVisible(true);
