@@ -81,6 +81,14 @@ public class City implements Comparable<City>
         }
     }
 
+    /**
+     * Basically arrive method with a parameter, a player.
+     * It returns the arrive method for a specific player.
+     *
+     * @param Player p
+     * @return the arrive method
+     */
+
     public int arrive(Player p) {
         return arrive();
     }
@@ -88,7 +96,7 @@ public class City implements Comparable<City>
     @Override
     /**
      *
-     * @return
+     * @return hash code for a city
      */
     public int hashCode(){
         return 19*name.hashCode()+13*country.hashCode();

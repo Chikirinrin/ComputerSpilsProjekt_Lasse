@@ -2,6 +2,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -88,7 +89,7 @@ public class CityTest {
 
     @Test
     public void arrive() throws Exception {
-        for(int i = 0; i<1000 ; i++) {       // Try different seeds
+        for (int i = 0; i < 1000; i++) {       // Try different seeds
             game.getRandom().setSeed(i);    // Set seed
             int bonus = country1.bonus(80); // Remember bonus
             game.getRandom().setSeed(i);    // Reset seed
@@ -97,52 +98,63 @@ public class CityTest {
             assertEquals(cityA.getValue(), 80 - bonus);
             cityA.reset();
 
-
+            City cityEmpty = new City("CityNoMoney",0, country2);
+            int bonus1 = country2.bonus(0);
+            int arrive1 = cityEmpty.arrive();
+            assertEquals(arrive1,bonus1);
+            assertEquals(cityEmpty.getValue(),0-bonus1);
+            cityEmpty.reset();
+        }
+    }
+     @Test
+    public void arriveMafiaCountry() {
+        for(int i = 0; i<1000; i++){
             game.getRandom().setSeed(i);    // Try different seeds.
             int mafiaBonus = country3.bonus(80); //Set seed.
             game.getRandom().setSeed(i);    // Remember bonus.
             int mafiaArrive = cityG.arrive();   //Reset seed.
             assertEquals(mafiaArrive, mafiaBonus); //Same bonus.
 
-            if (mafiaBonus < 0) {
-                assertEquals(cityG.getValue(), 80);
 
-            } else {
-                assertEquals(cityG.getValue(), 80 - mafiaBonus);
-            }
-            cityG.reset();
+            if (mafiaBonus < 0) {
+            assertEquals(cityG.getValue(), 80);
+        } else {
+            assertEquals(cityG.getValue(), 80 - mafiaBonus);
+           }
+        cityG.reset();
         }
-    }
+     }
+
 
     @Test
     public void hashCodeTestCity() throws Exception{
+        HashSet<City> testHash = new HashSet<>();
 
-        assertNotEquals(cityA.hashCode(),cityB.hashCode());
-        assertNotEquals(cityB.hashCode(),cityC.hashCode());
-        assertNotEquals(cityC.hashCode(),cityD.hashCode());
-        assertNotEquals(cityD.hashCode(),cityE.hashCode());
-        assertNotEquals(cityE.hashCode(),cityF.hashCode());
-        assertNotEquals(cityF.hashCode(),cityG.hashCode());
+        testHash.add(cityA);testHash.add(cityB);testHash.add(cityC);
+        testHash.add(cityD);testHash.add(cityE);testHash.add(cityF);
+        testHash.add(cityG);testHash.add(cityA);
+        assertEquals(testHash.size(),7);
 
-        assertEquals(cityA.hashCode(),cityA.getName().hashCode()*19+cityA.getCountry().hashCode()*13);
-        assertEquals(cityB.hashCode(),cityB.getName().hashCode()*19+cityB.getCountry().hashCode()*13);
+        City cityAllmostA =  new City("City A", 70, country2);
+        City cityOtherValueA = new City("City A", 50, country1);
+
+        assertEquals(cityA.hashCode(),cityOtherValueA.hashCode());
+        assertNotEquals(cityA.hashCode(),cityAllmostA.hashCode());
     }
 
     @Test
     public void equals() throws Exception{
-        City cityH = new City("City A", 80, country2);
+        City cityAllmostA = new City("City A", 80, country2);
+        City cityAA = new City("City A", 80, country1);
 
-        assertTrue(cityA.equals(cityA));
-        assertFalse(cityA.equals(country1));
-
-        assertFalse(cityA.getClass().equals(country1.getClass()));
+        assertTrue(cityA.equals(cityAA));
         assertFalse(cityA.equals(cityB));
-
         assertEquals(cityA.getCountry(),cityB.getCountry());
         assertNotEquals(cityA.getName(), cityB.getName());
+        assertFalse(cityA.equals(null));
 
-        assertFalse(cityA.equals(cityH));
-        assertEquals(cityA.getName(), cityH.getName());
-        assertNotEquals(cityA.getCountry(),cityH.getCountry());
+        assertFalse(cityA.equals(cityAllmostA));
+        assertEquals(cityA.getName(), cityAllmostA.getName());
+        assertNotEquals(cityA.getCountry(),cityAllmostA.getCountry());
     }
 }

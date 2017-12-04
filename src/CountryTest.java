@@ -23,6 +23,7 @@ public class CountryTest {
         network1 = new HashMap<>();
         network2 = new HashMap<>();
 
+
         // Create countries
         country1 = new Country("Country 1", network1);
         country2 = new Country("Country 2", network2);
@@ -58,7 +59,8 @@ public class CountryTest {
         network2.put(cityG, roadsG);
 
         // Create roads
-
+        country1.addRoads(cityA, cityB, 4);
+        country1.addRoads(cityA, cityC, 3);
         country1.addRoads(cityA, cityD, 5);
         country1.addRoads(cityB, cityD, 2);
         country1.addRoads(cityC, cityD, 2);
@@ -67,7 +69,8 @@ public class CountryTest {
         country2.addRoads(cityE, cityC, 4);
         country2.addRoads(cityE, cityF, 2);
         country2.addRoads(cityE, cityG, 5);
-
+        country2.addRoads(cityF, cityD, 3);
+        country2.addRoads(cityF, cityG, 6);
     }
 
     @Test
@@ -126,32 +129,29 @@ public class CountryTest {
     @Test
     public void addRoads() throws Exception {
         List<Road> roads1 = new ArrayList<>(country1.getRoads(cityA));
-        List<Road> roads2 = new ArrayList<>(country1.getRoads(cityB));
-        List<Road> roads3 = new ArrayList<>(country2.getRoads(cityF));
-        List<Road> roads4 = new ArrayList<>(country2.getRoads(cityG));
-        List<Road> roads5 = new ArrayList<>(country1.getRoads(cityC));
+        List<Road> roads2 = new ArrayList<>(country2.getRoads(cityF));
+        List<Road> roads3 = new ArrayList<>(country1.getRoads(cityC));
 
         //tester når begge byer ligger i samme land.
         roads1.add(new Road(cityA, cityB, 4));
-        roads2.add(new Road(cityB, cityA,4));
         country1.addRoads(cityA, cityB, 4);
-        assertEquals(country1.getRoads(cityA).get(0), roads1.get(0));
-        System.out.println("Første gang: "+country1.getRoads(cityA));
-        System.out.println(roads1);
-        System.out.println("Første gang: "+roads1.get(0));
-        assertEquals(country1.getRoads(cityB).get(0), roads2.get(0));
+        assertEquals(country1.getRoads(cityA).get(0).getLength(), roads1.get(0).getLength());
+        assertEquals(country1.getRoads(cityA).get(0).getFrom(), roads1.get(0).getFrom());
+        assertEquals(country1.getRoads(cityA).get(0).getTo(), roads1.get(0).getTo());
 
         //tester når en by ligger i det ene land og den anden by i
         //et andet land.
-        roads1.add(new Road(cityC, cityE,4));
+        roads3.add(new Road(cityC, cityE,4));
         country1.addRoads(cityC, cityE, 4);
-        assertEquals(country1.getRoads(cityC).get(0), roads5.get(0));
-        assertEquals(country2.getRoads(cityF).get(0),roads3.get(0));
+        assertEquals(country1.getRoads(cityC).get(0).getTo(), roads3.get(0).getTo());
+        assertEquals(country1.getRoads(cityC).get(0).getLength(),roads3.get(0).getLength());
+        assertEquals(country1.getRoads(cityC).get(0).getFrom(), roads3.get(0).getFrom());
 
         //tester når begge byer ikke er i landet.
+        // roads2 is an empty list
         country1.addRoads(cityE,cityF,2);
-        assertEquals(country2.getRoads(cityF).get(0), roads3.get(0));
-        assertEquals(country2.getRoads(cityG).get(0), roads4.get(0));
+        assertEquals(country2.getRoads(cityF), roads2);
+
     }
 
     @Test
@@ -185,6 +185,7 @@ public class CountryTest {
     }
     @Test
     public void setGame(){
+        Map<City, List<Road>> network1 = new HashMap<>();
         Country country3 = new Country("country3", network1);
         assertEquals(country3.getGame(),null);
         country3.setGame(game);
@@ -194,15 +195,14 @@ public class CountryTest {
     @Test
     public void getCities(){
         List<City> cities1 = new ArrayList<>();
-        Map<City, List<Road>> network1 = new HashMap<>();
-
-        Country country = new Country("Country123",network1);
+        Map<City,List<Road>> networkEmpty = new HashMap<>();
+        Country countryTest = new Country("Country123",networkEmpty);
         cities1.add(cityA);
         cities1.add(cityB);
         cities1.add(cityC);
         cities1.add(cityD);
         assertEquals(country1.getCities(), cities1);
-        assertEquals(country.getCities(),Collections.emptyList());
+        assertEquals(countryTest.getCities(), Collections.emptyList());
     }
     @Test
     public void getCity() {
@@ -218,19 +218,20 @@ public class CountryTest {
 
     @Test
     public void equals(){
-        assertTrue(country1.equals(country1));
+        assertTrue(country2.equals(country2));
+        assertFalse(country3.equals(cityC));
+        assertFalse(country3.equals(null));
         assertFalse(country1.equals(country2));
-        assertNotEquals(country1.getName(), country2.getName());
         assertTrue(country1.equals(country3));
-        assertEquals(country1.getName(), country3.getName());
     }
 
     @Test
     public void hashCodeTest() throws Exception{
+        int hashValue = country1.hashCode();
+        int hashValue2 = country3.hashCode();
         assertNotEquals(country1.hashCode(),country2.hashCode());
-
-        assertEquals(country1.hashCode(),country1.getName().hashCode()*17);
-        assertEquals(country2.hashCode(),country2.getName().hashCode()*17);
+        assertEquals(country1.hashCode(),hashValue);
+        assertEquals(country3.hashCode(),hashValue2);
     }
 
 }
