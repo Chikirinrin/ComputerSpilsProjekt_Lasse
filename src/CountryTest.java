@@ -227,11 +227,7 @@ public class CountryTest {
 
     @Test
     public void hashCodeTest() throws Exception{
-        int hashValue = country1.hashCode();
-        int hashValue2 = country3.hashCode();
         assertNotEquals(country1.hashCode(),country2.hashCode());
-        assertEquals(country1.hashCode(),hashValue);
-        assertEquals(country3.hashCode(),hashValue2);
     }
 
 }
