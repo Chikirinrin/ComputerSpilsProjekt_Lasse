@@ -66,11 +66,11 @@ public class Log {
             String[] choice = s[i].split(" ");
             choices.put(Integer.parseInt(choice[0]),choice[1]);
         }
-
-
-
     }
-    
+
+
+
+
     /**
      * Gets the current Settings associated with this Log.
      * @return A Settings object.
@@ -124,7 +124,7 @@ public class Log {
         }
         return builder.toString();
     }
-    //Hey LAsse
+
     
     /**
      * Saves this Log to a given path.
@@ -132,6 +132,10 @@ public class Log {
      * @throws IOException May be thrown if various I/O-exceptions occur.
      */
     public void save(String path) throws IOException{
+        PrintWriter writer = new PrintWriter(path,"windows-1252");
+        writer.write(toString());
+        writer.close();
+
     }
     
     /**

@@ -22,6 +22,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -337,14 +338,37 @@ public class GUI {
         buttons.add(optionsButton);
 
         JButton playLogButton = new JButton("Play Log");
-        playLogButton.addActionListener(e -> testPlayButton());
+        playLogButton.addActionListener(e -> {
+            try {
+                if (fileChooser.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
+                    Path p = Paths.get(fileChooser.getSelectedFile().getCanonicalPath());
+                    byte[] bytes = Files.readAllBytes(p);
+                    String log = new String(bytes, "windows-1252");
+                    Log log1 = new Log(log);
+                    game.playLog(log1);
+                }
+            }catch (IOException e1){
+                JOptionPane.showMessageDialog(mainFrame,"IOException detected, please select a valid file/path", "IOException",JOptionPane.ERROR_MESSAGE);
+            }catch (SettingsException e1){
+                JOptionPane.showMessageDialog(mainFrame,"SettingsException detected, the settings are corrupted","SettingsException",JOptionPane.ERROR_MESSAGE);
+            }catch (LogException e1){
+                JOptionPane.showMessageDialog(mainFrame,"LogException detected", "LogException", JOptionPane.ERROR_MESSAGE);
+            }
+
+        });
         buttons.add(playLogButton);
 
         JButton saveLogButton = new JButton("Save Log");
-        saveLogButton.addActionListener(e -> testSaveButton());
+        saveLogButton.addActionListener(e -> {
+            try {
+                if(fileChooser.showSaveDialog(mainFrame) == JFileChooser.APPROVE_OPTION);
+                game.getLog().save(fileChooser.getSelectedFile().getCanonicalPath());
+            }catch (IOException e1){
+                e1.printStackTrace();
+                JOptionPane.showMessageDialog(mainFrame,"IOException detected, please select a valid file/path", "IOException",JOptionPane.ERROR_MESSAGE);
+            }
+        });
         buttons.add(saveLogButton);
-
-
 
         //Return the JPanel
         return buttons;
@@ -561,17 +585,18 @@ public class GUI {
      * Tests the Save button.
      * This method is invoked when testing the functionality of the Save button.
      */
-    private void testSaveButton(){
+   /* private void testSaveButton(){
         JOptionPane.showMessageDialog(mainFrame, "You have clicked the 'Save' button.", "Information", JOptionPane.INFORMATION_MESSAGE);
-    }
+    }*/
 
     /**
      * Tests the Play button.
      * This method is invoked when testing the functionality of the Play button.
-     */
+     *
     private void testPlayButton(){
         JOptionPane.showMessageDialog(mainFrame, "You have clicked the 'Play' button.", "Information", JOptionPane.INFORMATION_MESSAGE);
-    }
+
+    }*/
 
     /**
      * Tests the Repeat button.
