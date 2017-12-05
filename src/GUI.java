@@ -357,7 +357,7 @@ public class GUI {
 
         });
         buttons.add(playLogButton);
-
+//hej
         JButton saveLogButton = new JButton("Save Log");
         saveLogButton.addActionListener(e -> {
             try {
